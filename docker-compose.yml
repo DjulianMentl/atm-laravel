@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+
+  web:
+    container_name: laravel_nginx
+    image: nginx:stable
+    depends_on:
+      - php
+    working_dir: /var/www/laravel/
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/laravel
+      - ./config/docker-compose/nginx/default.conf:/etc/nginx/nginx.conf
+    networks:
+        - laravel
+  php:
+    container_name: laravel_php-fpm
+    hostname: php-docker-service
+    build:
+      context: config/docker-compose
+      dockerfile: Dockerfile
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+    volumes:
+      - ./:/var/www/laravel
+      - ./config/docker-compose/docker-xdebug-php.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    environment:
+      PHP_IDE_CONFIG: "serverName=php7-fpm_Docker"
+      XDEBUG_SESSION: 1
+      XDEBUG_CONFIG: 1
+    networks:
+        - laravel
+
+networks:
+    laravel:
+        driver: bridge

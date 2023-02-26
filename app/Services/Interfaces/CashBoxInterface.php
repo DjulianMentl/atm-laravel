@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Interfaces;
 
 use App\DTO\Banknote;
+use App\DTO\BanknoteNominals;
 use WS\Utils\Collections\Collection;
 
 interface CashBoxInterface
 {
+
+
     /**
      * Формирование списка ячеек с номиналами для вывода пользователю
      *
@@ -29,5 +32,4 @@ interface CashBoxInterface
      * Списание суммы со счета пользователя.
      */
     public function takeBanknotes(int $sum): Collection;
-
 }
