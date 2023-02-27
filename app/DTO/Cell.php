@@ -30,4 +30,9 @@ class Cell
     {
         return $this->nominal;
     }
+
+    public function setAmount(int $amount): void
+    {
+        $this->amount = $amount;
+    }
 }

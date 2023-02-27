@@ -29,15 +29,15 @@ return [
     'accounts' => [
         [
             'login' => 'kompot',
-            'amount' => 2000
+            'amount' => 20000
         ],
         [
             'login' => 'korzik',
-            'amount' => 3000
+            'amount' => 30000
         ],
         [
             'login' => 'karamelka',
-            'amount' => 4000
+            'amount' => 40000
         ],
     ],
 
@@ -74,7 +74,7 @@ return [
         [
             'name' => 'fifty',
             'nominal' => BanknoteNominals::FIFTY,
-            'amount' => 1,
+            'amount' => 10,
         ],
         [
             'name' => 'hundred',
@@ -84,27 +84,27 @@ return [
         [
             'name' => 'two-hundred',
             'nominal' => BanknoteNominals::TWO_HUNDRED,
-            'amount' => 1,
+            'amount' => 28,
         ],
         [
             'name' => 'five-hundred',
             'nominal' => BanknoteNominals::FIVE_HUNDRED,
-            'amount' => 1,
+            'amount' => 21,
         ],
         [
             'name' => 'thousand',
             'nominal' => BanknoteNominals::THOUSAND,
-            'amount' => 1,
+            'amount' => 12,
         ],
         [
             'name' => 'two-thousand',
             'nominal' => BanknoteNominals::TWO_THOUSAND,
-            'amount' => 1,
+            'amount' => 10,
         ],
         [
             'name' => 'five-thousand',
             'nominal' => BanknoteNominals::FIVE_THOUSAND,
-            'amount' => 10,
+            'amount' => 5,
         ],
     ],
 ];

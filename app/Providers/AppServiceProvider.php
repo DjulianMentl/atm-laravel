@@ -2,10 +2,9 @@
 
 namespace App\Providers;
 
-use App\DTO\Banknote;
+use App\DTO\Cell;
+use App\DTO\User;
 use App\DTO\UserAccount;
-use App\DTO\UserAccounts;
-use App\DTO\Users;
 use App\Services\AtmService;
 use App\Services\CashBox;
 use App\Services\RoutesHandler;
@@ -29,26 +28,34 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(AtmInterface::class, AtmService::class);
-        $this->app->singleton(SessionInterface::class, UserSession::class);
-        $this->app->singleton(CashBoxInterface::class, CashBox::class);
+
+        $this->app->singleton(CashBoxInterface::class, function () {
+            return new CashBox(CollectionFactory::from(config('atm.cells'))->stream()->map(
+                function ($cell) {
+                    return new Cell($cell);
+                }
+            )->getCollection());
+        });
+
+        $this->app->singleton(SessionInterface::class, function () {
+            return new UserSession(CollectionFactory::from(config('atm.accounts'))->stream()->map(
+                function ($account) {
+                    return new UserAccount($account);
+                })->getCollection());
+        });
+
+
+        $this->app->singleton(UserAuthInterface::class, function () {
+            return new UserAuth(CollectionFactory::from(config('atm.users'))->stream()->map(
+                function ($user) {
+                    return new User($user);
+                })->getCollection());
+        });
 
         $this->app->singleton(RoutesInterface::class, function () {
             return new RoutesHandler(CollectionFactory::from(config('atm.routes')));
         });
 
-        $this->app->singleton(Users::class, function () {
-            return new Users(CollectionFactory::from(config('atm.users')));
-        });
-
-        $this->app->singleton(UserAccounts::class, function () {
-            return new UserAccounts(CollectionFactory::from(config('atm.accounts')));
-        });
-
-        $this->app->bind(UserAuthInterface::class, UserAuth::class);
-
-        $this->app->when(CashBox::class)
-            ->needs('$cells')
-            ->giveConfig('atm.cells');
     }
 
     /**

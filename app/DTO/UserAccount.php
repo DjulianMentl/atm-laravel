@@ -7,17 +7,12 @@ use WS\Utils\Collections\Collection;
 class UserAccount
 {
     private string $login;
-    private string $balance;
+    private int $balance;
 
-    public function __construct(string $login, Collection $accounts)
+    public function __construct(array $account)
     {
-        $accounts->stream()->each(function ($account) use ($login) {
-
-            if ($account['login'] === $login) {
-                $this->login    = $account['login'];
-                $this->balance  = $account['amount'];
-            }
-        });
+        $this->login    = $account['login'];
+        $this->balance  = $account['amount'];
     }
 
     public function getLogin(): string
@@ -25,12 +20,12 @@ class UserAccount
         return $this->login;
     }
 
-    public function getBalance(): string
+    public function getBalance(): int
     {
         return $this->balance;
     }
 
-    public function setBalance(string $balance): void
+    public function setBalance(int $balance): void
     {
         $this->balance = $balance;
     }

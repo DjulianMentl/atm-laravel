@@ -4,11 +4,6 @@ namespace App\Services;
 
 use App\DTO\AuthData;
 use App\DTO\Banknote;
-use App\DTO\BanknoteNominals;
-use App\DTO\Cell;
-use App\DTO\UserAccount;
-use App\DTO\User;
-use App\DTO\Users;
 use App\Services\Interfaces\AtmInterface;
 use App\Services\Interfaces\CashBoxInterface;
 use App\Services\Interfaces\RoutesInterface;
@@ -16,55 +11,30 @@ use App\Services\Interfaces\SessionInterface;
 use App\Services\Interfaces\UserAuthInterface;
 use Illuminate\Support\Facades\App;
 use WS\Utils\Collections\Collection;
-use WS\Utils\Collections\CollectionFactory;
 
 class AtmService implements AtmInterface
 {
 
     private SessionInterface $session;
-    private RoutesInterface $handler;
+    private RoutesInterface $routes;
     private CashBoxInterface $cashBox;
 
-    public function __construct(SessionInterface $session, RoutesInterface $handler, CashBoxInterface $cashBox)
+    public function __construct(SessionInterface $session, RoutesInterface $routes, CashBoxInterface $cashBox)
     {
         $this->session = $session;
-        $this->handler = $handler;
+        $this->routes = $routes;
         $this->cashBox = $cashBox;
     }
 
-    public function firstCollection()
-    {
-       return $this->handler;
-
-//        $a = CollectionFactory::from(config('atm.cells'))
-//            ->stream()
-//            ->map(function ($cell) {
-//                return new Cells($cell);
-//            })
-//            ->getCollection()
-//        ;
-//
-//        foreach ($a as $item) {
-//            var_dump($item->getName());
-//        }
-//
-//        $a->stream()->each(function (Cells $cell) {
-//           var_dump($cell->getName());
-//        });
-
-
-    }
-
-
     public function getMenu(): array
     {
-        return $this->handler->getMenu();
+        return $this->routes->getMenu();
     }
 
 
     public function getCommand($code): string
     {
-        return $this->handler->getCommand($code);
+        return $this->routes->getCommand($code);
     }
 
 
@@ -102,12 +72,13 @@ class AtmService implements AtmInterface
     {
         $userAuth = App::make(UserAuthInterface::class);
 
-        if (!$userAuth->login($authData)) {
+        $user = $userAuth->login($authData);
+
+        if (!$user) {
             return false;
         }
 
-        $this->session->setAccount(new UserAccount($authData->getLogin(), $userAuth->getAccounts()));
-        $this->session->init(new User($authData->getLogin(), $userAuth->getUsers()));
+        $this->session->init($user);
 
         return true;
     }
@@ -130,13 +101,14 @@ class AtmService implements AtmInterface
         return $this->session->getBalance();
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function takeBanknotesBySum(int $sum): Collection
     {
-        // TODO: Implement takeBanknotesBySum() method.
+        $takeBanknotes = $this->cashBox->takeBanknotes($sum);
+        $this->session->withdraw($sum);
+        return $takeBanknotes;
     }
+
 
     public function getSessionUserName(): ?string
     {
@@ -146,12 +118,18 @@ class AtmService implements AtmInterface
 
     public function getSessionStartTime(): ?string
     {
-        return ($this->session->getStartTime()) ->getTimestamp();
+        return ($this->session->getStartTime()) ->format("d.m.Y-H:i:s");
     }
 
 
     public function getSessionEndTime(): ?string
     {
-        return ($this->session->getEndTime()) ->getTimestamp();
+        return ($this->session->getEndTime()) ->format("d.m.Y-H:i:s");
+    }
+
+
+    public function isMultipleFifty(int $number): bool
+    {
+        return $number % 50 == 0;
     }
 }

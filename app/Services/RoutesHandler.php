@@ -10,9 +10,9 @@ class RoutesHandler implements RoutesInterface
     private array $commands;
     private array $menu;
 
-    public function __construct(Collection $routesConfig)
+    public function __construct(Collection $routes)
     {
-        $routesConfig->stream()->each(function ($route) {
+        $routes->stream()->each(function ($route) {
             $this->commands[$route['code']] = $route['command'];
             $this->menu[$route['code']]     = $route['name'];
         });

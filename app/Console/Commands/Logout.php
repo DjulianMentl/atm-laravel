@@ -29,7 +29,11 @@ class Logout extends Command
     public function handle(AtmInterface $atm)
     {
         $this->info('Goodbye ' . $atm->getSessionUserName());
+        $this->info('Session end: ' . $atm->getSessionEndTime());
 
         $atm->logout();
+
+        $this->call(CommandNames::ATM_USER_AUTH);
+        $this->call(CommandNames::ATM_MENU);
     }
 }

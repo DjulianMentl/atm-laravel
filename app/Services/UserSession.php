@@ -7,26 +7,37 @@ use App\DTO\User;
 use App\Services\Interfaces\SessionInterface;
 use DateTime;
 use DateTimeInterface;
+use WS\Utils\Collections\Collection;
 
 class UserSession implements SessionInterface
 {
     private ?User $user;
-    private ?UserAccount $account;
+    private Collection $userAccounts;
+    private UserAccount $account;
+
+    public function __construct(Collection $userAccounts)
+    {
+        $this->userAccounts = $userAccounts;
+    }
 
     public function init(User $user): void
     {
+        $this->setAccount($user);
         $this->user = $user;
     }
 
-    public function setAccount(UserAccount $account)
+    private function setAccount(User $user): void
     {
-        $this->account = $account;
+        $this->userAccounts->stream()->each(function (UserAccount $account) use ($user) {
+            if ($user->getLogin() === $account->getLogin()) {
+                $this->account = $account;
+            }
+        });
     }
 
     public function terminate(): void
     {
         $this->user = null;
-        $this->account = null;
     }
 
 
@@ -71,11 +82,9 @@ class UserSession implements SessionInterface
         return $this->getBalance() >= $sum;
     }
 
-    /**
-     * @inheritDoc
-     */
+
     public function withdraw(int $sum): void
     {
-        // TODO: Implement withdraw() method.
+        $this->account->setBalance($this->getBalance() - $sum);
     }
 }

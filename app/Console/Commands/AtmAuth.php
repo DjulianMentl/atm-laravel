@@ -50,6 +50,7 @@ class AtmAuth extends Command
         }
 
         $this->info('Hello ' . $atm->getSessionUserName());
+        $this->info('Session start: ' . $atm->getSessionStartTime());
     }
 
 

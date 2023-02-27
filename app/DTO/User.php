@@ -11,29 +11,12 @@ class User
     private string $login;
     private string $password;
 
-    public function __construct(string $login, Collection $users)
+    public function __construct(array $user)
     {
-
-        $users->stream()->each(function ($user) use ($login) {
-            if ($user['login'] === $login) {
-
-                $this->name     = $user['name'];
-                $this->lastname = $user['lastname'];
-                $this->login    = $user['login'];
-                $this->password = $user['password'];
-            }
-        });
-
-//        foreach ($users as $user) {
-//
-//            if ($user['login'] === $login) {
-//
-//                $this->name     = $user['name'];
-//                $this->lastname = $user['lastname'];
-//                $this->login    = $user['login'];
-//                $this->password = $user['password'];
-//            }
-//        }
+        $this->name     = $user['name'];
+        $this->lastname = $user['lastname'];
+        $this->login    = $user['login'];
+        $this->password = $user['password'];
     }
 
     public function getName(): string
